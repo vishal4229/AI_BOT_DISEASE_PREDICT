@@ -12,13 +12,13 @@ let r = ""
 let is_doc = false
 const chatSocket = new WebSocket(
   'ws://'
-  + window.location.host
+  + "127.0.0.1:8000"
   + '/ws/chat/'
-  + String(Math.random(10))
+  + 'roomName'
   + '/'
 );
 
-function get_available_doctor(){
+function get_available_doctor() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
@@ -46,14 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.code === "Enter") {
       let input = inputField.value;
       inputField.value = "";
-      if (server_check == true && allow_input == true && live_chat1==false) {
+      if (server_check == true && allow_input == true && live_chat1 == false) {
         if (next_question == false) {
           input = input.trim()
           if (isNumeric(input) != true) {
             botChat(input, "Please enter valid numbers")
             return
           }
-          else{
+          else {
             result2.push(input)
           }
         }
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
           case_value += 1;
         }
       }
-      if(server_check == true && allow_input == true && live_chat1==true){
+      if (server_check == true && allow_input == true && live_chat1 == true) {
         case_value = 'live_chat'
         output(input);
       }
@@ -78,34 +78,35 @@ var a = []
 async function output(input) {
   let product;
   let pr;
-  if(document.getElementById("input").placeholder == 'Enter Your Name..'){
+  if (document.getElementById("input").placeholder == 'Enter Your Name..') {
     username = input
   }
   $('#input').attr('placeholder', 'Say Something...');
   let text = input.toLowerCase().replace(/[^\w\s]/gi, "").replace(/[\d]/gi, "").trim();
   switch (case_value) {
     case 0:
-      if(is_doc!=true){
-      product = "Hello".concat(" ", input)
-      await wait(1000);
-      botChat(input, 'Hey '+input+',Would You like to take a quick Test')
-      await wait(1000)
-      botChat_object(input, "<div><button id='yes_bt' class='btn btn-outline-success' onclick='yes_click()'>Yes</button><button id='no_bt' class='btn btn-outline-danger' onclick='no_click()'>No</button></div>")
-      allow_input = false
+      if (is_doc != true) {
+        product = "Hello".concat(" ", input)
+        await wait(1000);
+        botChat(input, 'Hey ' + input + ',Would You like to take a quick Test')
+        await wait(1000)
+        botChat_object(input, "<div><button id='yes_bt' class='btn btn-outline-success' onclick='yes_click()'>Yes</button><button id='no_bt' class='btn btn-outline-danger' onclick='no_click()'>No</button></div>")
+        allow_input = false
       }
-      else if(is_doc==true){
-      product = "Hello".concat(" ", input)
-      await wait(1000);
-      botChat(input, 'Hello Doctor '+input+', Please be active soon will connect to the patient.')
-      await wait(1000)
-      
-      const chatSocket = new WebSocket(
-        'ws://'
-        + window.location.host
-        + '/ws/chat/'
-        + String(username)+'_Room'
-        + '/'
-      );
+      else if (is_doc == true) {
+        product = "Hello".concat(" ", input)
+        await wait(1000);
+        botChat(input, 'Hello Doctor ' + input + ', Please be active soon will connect to the patient.')
+        await wait(1000)
+        save_room(String(username) + '_Room')
+        const chatSocket = new WebSocket(
+          'ws://'
+          + "127.0.0.1:8000"
+          + '/ws/chat/'
+          + String(username) + '_Room'
+          + '/'
+        );
+        live_chat("<h5>Be online......</h5>")
       }
       break;
     case "no":
@@ -115,15 +116,15 @@ async function output(input) {
       if (question_no == a.length) {
         server_check_enable = false;
         console.log(result2)
-        predict_result(result2).then(function(result) {
+        predict_result(result2).then(function (result) {
           // Run this when your request was successful
-          pr = "<h5 style='color:blue'>"+result['result'][0]+"</h5>"
-          botChat_object(input,pr)
-        }).catch(function(err) {
+          pr = "<h5 style='color:blue'>" + result['result'][0] + "</h5>"
+          botChat_object(input, pr)
+        }).catch(function (err) {
           // console.log(JSON.stringify(err.responseText))
           // Run this when promise was rejected via reject()
-          pr = "<h5 style='color:red'>"+JSON.parse(err.responseText)+"</h5"
-          botChat_object(input,pr)
+          pr = "<h5 style='color:red'>" + JSON.parse(err.responseText) + "</h5"
+          botChat_object(input, pr)
         })
         await wait(1000);
         botChat(input, "Thank You,Have A Nice Day!")
@@ -137,10 +138,10 @@ async function output(input) {
       }
       break;
     case "live_chat":
-      addChat(input,input)
+      addChat(input, input)
       r = (Math.random() + 1).toString(36).substring(7);
       chatSocket.send(JSON.stringify({
-        'message': input+'--'+String(username)+String(r)
+        'message': input + '--' + String(username) + String(r)
       }));
     default:
       break;
@@ -275,7 +276,7 @@ async function yes_click() {
   if (server_check == true) {
     case_value = "yes";
     await wait(1000)
-    botChat(input,"Please Answer Few Questions..")
+    botChat(input, "Please Answer Few Questions..")
     output("yes")
     allow_input = true
     document.getElementById("yes_bt").onclick = null;
@@ -289,7 +290,7 @@ function no_click() {
     server_check_enable = false
     allow_input = true
     document.getElementById("no_bt").onclick = null;
-    live_chat()
+    live_chat("<h5>Connecting To Available Doctor......</h5>")
     get_available_doctor()
   }
 }
@@ -298,65 +299,65 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-function get_question(){
-$.ajax({
-  type: "GET",
-  contentType: "application/json;charset=utf-8",
-  url: 'http://127.0.0.1:8000/app/predict_questions',
-  traditional: "true",
-  // data: email1,
-  success: function (result) {
-    a = result['questions']
-  },
-  error: function () {
-    alert("Error in Connecting Server")
-  }
-});
+function get_question() {
+  $.ajax({
+    type: "GET",
+    contentType: "application/json;charset=utf-8",
+    url: 'http://127.0.0.1:8000/app/predict_questions',
+    traditional: "true",
+    // data: email1,
+    success: function (result) {
+      a = result['questions']
+    },
+    error: function () {
+      alert("Error in Connecting Server")
+    }
+  });
 }
 
-function predict_result(result1){
+function predict_result(result1) {
   var data_dict = {};
   data_dict['input'] = result1
   console.log(data_dict)
-  return new Promise(function(resolve, reject) {
-  $.ajax({
-    type: "POST",
-    contentType: "application/json;charset=utf-8",
-    dataType: "json",
-    url: 'http://127.0.0.1:8000/app/disease_predict',
-    traditional: "true",       
-    data: JSON.stringify(data_dict),
-    success: function (result) {
-      resolve(result)
-    },
-    error: function (err) {
-      reject(err)
-    }
-  });
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      type: "POST",
+      contentType: "application/json;charset=utf-8",
+      dataType: "json",
+      url: 'http://127.0.0.1:8000/app/disease_predict',
+      traditional: "true",
+      data: JSON.stringify(data_dict),
+      success: function (result) {
+        resolve(result)
+      },
+      error: function (err) {
+        reject(err)
+      }
+    });
   });
 }
 
-  chatSocket.onmessage = function(e) {
-    // JSON.parse() converts the JSON object back into the original object,
-    // then examine and act upon its contents.
-    var repl = ''
-    const data = JSON.parse(e.data);
-    re_txt = '--'+String(username)+String(r)
-    if(live_chat1==true){
-      if(data.message.includes(re_txt)){
+chatSocket.onmessage = function (e) {
+  // JSON.parse() converts the JSON object back into the original object,
+  // then examine and act upon its contents.
+  var repl = ''
+  const data = JSON.parse(e.data);
+  re_txt = '--' + String(username) + String(r)
+  if (live_chat1 == true) {
+    if (data.message.includes(re_txt)) {
       ;
     }
-    else{
+    else {
       // console.log(data.message,data.message.replace(re_txt,''))
       repl = data.message.split("--")
-      console.log(re_txt , repl[0])
+      console.log(re_txt, repl[0])
       botChat(input, repl[0])
     }
   }
 }
-async function live_chat(){
+async function live_chat(html_input) {
   live_chat1 = true
-  botChat_object(input, "<h5>Connecting To Available Doctor......</h5>")
+  botChat_object(input, html_input)
   await wait(2000)
   document.getElementById("messages").innerHTML = ""
   // while(server_check==true){
@@ -368,26 +369,26 @@ async function live_chat(){
   //   };
 }
 
-function check1(){
+function check1() {
   console.log(is_doc)
-  if(is_doc!=true){
+  if (is_doc != true) {
     is_doc = true
   }
-  else{
+  else {
     document.getElementById("chk1").checked = false;
-  document.getElementById("chk1").onclick = "return false";
+    document.getElementById("chk1").onclick = "return false";
   }
 }
 
-function save_room(room1){
-  var data_dict={}
+function save_room(room1) {
+  var data_dict = {}
   data_dict['room'] = room1
   $.ajax({
     type: "POST",
     contentType: "application/json;charset=utf-8",
     dataType: "json",
     url: 'http://127.0.0.1:8000/app/available_doctor',
-    traditional: "true",       
+    traditional: "true",
     data: JSON.stringify(data_dict),
     success: function (result) {
       resolve(result)
