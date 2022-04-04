@@ -142,3 +142,4 @@ CHANNEL_LAYERS = {
     },
 }
 ASGI_APPLICATION = "AI_BOT.asgi.application"
+# AUTH_USER_MODEL = 'disease_predict.consumer'

@@ -1,5 +1,6 @@
 import os
 import random
+from re import A
 from ssl import ALERT_DESCRIPTION_BAD_CERTIFICATE_HASH_VALUE
 from django.shortcuts import render
 from matplotlib.style import available
@@ -40,11 +41,13 @@ class Prediction_question(APIView):
 class Available_doctor(APIView):
     def get(self,request):
         available_doctors = []
-        # a_obj = available_room.objects.filter(is_active=True,online_gt=0)
-        # for i in a_obj:
-        #     available_doctors.append(i.room_name)
-        # return Response(status=200,data={'doctor':available_doctors})
-        return Response(status=200,data={'doctor':'vishal_Room'})
+        a_obj = available_room.objects.filter(is_active=True,online__gt=0)
+        for i in a_obj:
+            available_doctors.append(i.room_name)
+        if len(available_doctors)>3:
+            available_doctors = available_doctors[:3]
+        return Response(status=200,data={'doctor':available_doctors})
+        # return Response(status=200,data={'doctor':'vishal_Room'})
 
     def post(self,request):
         room1=''

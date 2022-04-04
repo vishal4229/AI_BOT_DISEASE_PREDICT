@@ -19,6 +19,7 @@ const chatSocket = new WebSocket(
 );
 
 function get_available_doctor() {
+  var avail_doctor = []
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
@@ -26,14 +27,16 @@ function get_available_doctor() {
     traditional: "true",
     // data: email1,
     success: function (result) {
-
-      const chatSocket = new WebSocket(
-        'ws://'
-        + "127.0.0.1:8000"
-        + '/ws/chat/'
-        + String(result['doctor'])
-        + '/'
-      );
+      avail_doctor = result['doctor']
+      display_avail_doctor(avail_doctor)
+      //   const chatSocket = new WebSocket(
+      //     'ws://'
+      //     + "127.0.0.1:8000"
+      //     + '/ws/chat/'
+      //     + String(result['doctor'])
+      //     + '/'
+      //   );
+      // },
     },
     error: function () {
       alert("Error in Connecting Server")
@@ -69,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (server_check == true && allow_input == true && live_chat1 == true) {
         case_value = 'live_chat'
+        console.log(input)
         output(input);
       }
     }
@@ -106,7 +110,7 @@ async function output(input) {
           + String(username) + '_Room'
           + '/'
         );
-        live_chat("<h5>Be online......</h5>")
+        live_chat1=true
       }
       break;
     case "no":
@@ -287,7 +291,7 @@ function no_click() {
   if (server_check == true) {
     case_value = "no";
     output("Thank You,Have A Nice Day!")
-    server_check_enable = false
+    // server_check_enable = false
     allow_input = true
     document.getElementById("no_bt").onclick = null;
     live_chat("<h5>Connecting To Available Doctor......</h5>")
@@ -358,7 +362,7 @@ chatSocket.onmessage = function (e) {
 async function live_chat(html_input) {
   live_chat1 = true
   botChat_object(input, html_input)
-  await wait(2000)
+  await wait(4000)
   document.getElementById("messages").innerHTML = ""
   // while(server_check==true){
   //   chatSocket.onmessage = function(e) {
@@ -391,10 +395,34 @@ function save_room(room1) {
     traditional: "true",
     data: JSON.stringify(data_dict),
     success: function (result) {
-      resolve(result)
+      console.log(result)
     },
     error: function (err) {
       alert("error in saving object")
     }
   });
+}
+
+async function display_avail_doctor(avail_doctor) {
+  var st = "<div>"
+  await wait(2000)
+  botChat(input, "Recommended Doctors Online at the Moment")
+  await wait(3000)
+  console.log(avail_doctor.length)
+  // <button type="button" class="btn btn-outline-info">Info</button>
+  for(var i=0;i<avail_doctor.length;i++){
+    st+="<button id='"+i+"_bt' class='btn btn-outline-success' onclick='d"+i+"_click()'>"+avail_doctor[i].split("_")[0]+"</button>"
+    console.log(st)
+  }
+  st+="</div>"
+  console.log(st)
+  botChat_object(input, st)
+}
+
+async function d0_click(){
+  live_chat1=true
+  live_chat("<h5>Connecting..</h5>")
+  await wait(4000)
+  botChat(input,"Connected to Doctor")
+
 }
