@@ -13,7 +13,7 @@ let is_doc = false
 let avail_doctor=[]
 const chatSocket = new WebSocket(
   'ws://'
-  + "127.0.0.1:8000"
+  + "54.145.46.146:8000"
   + '/ws/chat/'
   + 'roomName'
   + '/'
@@ -23,7 +23,7 @@ function get_available_doctor() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://127.0.0.1:8000/app/available_doctor',
+    url: 'http://54.145.46.146:8000/app/available_doctor',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -105,7 +105,7 @@ async function output(input) {
         save_room(String(username) + '_Room')
         const chatSocket = new WebSocket(
           'ws://'
-          + "127.0.0.1:8000"
+          + "54.145.46.146:8000"
           + '/ws/chat/'
           + String(username) + '_Room'
           + '/'
@@ -237,7 +237,7 @@ async function server() {
       $.ajax({
         type: "GET",
         contentType: "application/json;charset=utf-8",
-        url: 'http://127.0.0.1:8000/app/disease_predict',
+        url: 'http://54.145.46.146:8000/app/disease_predict',
         traditional: "true",
         // data: email1,
         success: function (result) {
@@ -307,7 +307,7 @@ function get_question() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://127.0.0.1:8000/app/predict_questions',
+    url: 'http://54.145.46.146:8000/app/predict_questions',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -328,7 +328,7 @@ function predict_result(result1) {
       type: "POST",
       contentType: "application/json;charset=utf-8",
       dataType: "json",
-      url: 'http://127.0.0.1:8000/app/disease_predict',
+      url: 'http://54.145.46.146:8000/app/disease_predict',
       traditional: "true",
       data: JSON.stringify(data_dict),
       success: function (result) {
@@ -391,7 +391,7 @@ function save_room(room1) {
     type: "POST",
     contentType: "application/json;charset=utf-8",
     dataType: "json",
-    url: 'http://127.0.0.1:8000/app/available_doctor',
+    url: 'http://54.145.46.146:8000/app/available_doctor',
     traditional: "true",
     data: JSON.stringify(data_dict),
     success: function (result) {
