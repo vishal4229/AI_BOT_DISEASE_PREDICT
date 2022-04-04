@@ -10,6 +10,7 @@ let username = ""
 let live_chat1 = false
 let r = ""
 let is_doc = false
+let avail_doctor=[]
 const chatSocket = new WebSocket(
   'ws://'
   + "127.0.0.1:8000"
@@ -19,7 +20,6 @@ const chatSocket = new WebSocket(
 );
 
 function get_available_doctor() {
-  var avail_doctor = []
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
@@ -423,6 +423,6 @@ async function d0_click(){
   live_chat1=true
   live_chat("<h5>Connecting..</h5>")
   await wait(4000)
-  botChat(input,"Connected to Doctor")
+  botChat(input,"Connected to Doctor "+avail_doctor[0].split('_')[0]+"")
 
 }
