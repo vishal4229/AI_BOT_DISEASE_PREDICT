@@ -13,9 +13,9 @@ let is_doc = false
 let avail_doctor=[]
 const chatSocket = new WebSocket(
   'ws://'
-  + "54.145.46.146:8000"
+  + "0.0.0.0:8000"
   + '/ws/chat/'
-  + 'roomName'
+  + 'room_Room'
   + '/'
 );
 
@@ -23,7 +23,7 @@ function get_available_doctor() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://54.145.46.146:8000/app/available_doctor',
+    url: 'http://0.0.0.0:8000/app/available_doctor',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -31,7 +31,7 @@ function get_available_doctor() {
       display_avail_doctor(avail_doctor)
       //   const chatSocket = new WebSocket(
       //     'ws://'
-      //     + "127.0.0.1:8000"
+      //     + "0.0.0.0:8000"
       //     + '/ws/chat/'
       //     + String(result['doctor'])
       //     + '/'
@@ -237,7 +237,7 @@ async function server() {
       $.ajax({
         type: "GET",
         contentType: "application/json;charset=utf-8",
-        url: 'http://54.145.46.146:8000/app/disease_predict',
+        url: 'http://0.0.0.0:8000/app/disease_predict',
         traditional: "true",
         // data: email1,
         success: function (result) {
@@ -307,7 +307,7 @@ function get_question() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://54.145.46.146:8000/app/predict_questions',
+    url: 'http://0.0.0.0:8000/app/predict_questions',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -328,7 +328,7 @@ function predict_result(result1) {
       type: "POST",
       contentType: "application/json;charset=utf-8",
       dataType: "json",
-      url: 'http://54.145.46.146:8000/app/disease_predict',
+      url: 'http://0.0.0.0:8000/app/disease_predict',
       traditional: "true",
       data: JSON.stringify(data_dict),
       success: function (result) {
@@ -391,7 +391,7 @@ function save_room(room1) {
     type: "POST",
     contentType: "application/json;charset=utf-8",
     dataType: "json",
-    url: 'http://54.145.46.146:8000/app/available_doctor',
+    url: 'http://0.0.0.0:8000/app/available_doctor',
     traditional: "true",
     data: JSON.stringify(data_dict),
     success: function (result) {
@@ -424,5 +424,13 @@ async function d0_click(){
   live_chat("<h5>Connecting..</h5>")
   await wait(4000)
   botChat(input,"Connected to Doctor "+avail_doctor[0].split('_')[0]+"")
+
+}
+
+async function d1_click(){
+  live_chat1=true
+  live_chat("<h5>Connecting..</h5>")
+  await wait(4000)
+  botChat(input,"Connected to Doctor "+avail_doctor[1].split('_')[0]+"")
 
 }
