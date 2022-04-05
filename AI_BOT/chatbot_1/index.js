@@ -11,6 +11,7 @@ let live_chat1 = false
 let r = ""
 let is_doc = false
 let avail_doctor=[]
+let is_world = false
 const chatSocket = new WebSocket(
   'ws://'
   + "0.0.0.0:8000"
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.code === "Enter") {
       let input = inputField.value;
       inputField.value = "";
+      console.log(server_check,allow_input,live_chat1)
       if (server_check == true && allow_input == true && live_chat1 == false) {
         if (next_question == false) {
           input = input.trim()
@@ -89,7 +91,7 @@ async function output(input) {
   let text = input.toLowerCase().replace(/[^\w\s]/gi, "").replace(/[\d]/gi, "").trim();
   switch (case_value) {
     case 0:
-      if (is_doc != true) {
+      if (is_doc != true && is_world!=true) {
         product = "Hello".concat(" ", input)
         await wait(1000);
         botChat(input, 'Hey ' + input + ',Would You like to take a quick Test')
@@ -103,13 +105,28 @@ async function output(input) {
         botChat(input, 'Hello Doctor ' + input + ', Please be active soon will connect to the patient.')
         await wait(1000)
         save_room(String(username) + '_Room')
-        const chatSocket = new WebSocket(
-          'ws://'
-          + "54.145.46.146:8000"
-          + '/ws/chat/'
-          + String(username) + '_Room'
-          + '/'
-        );
+        // const chatSocket = new WebSocket(
+        //   'ws://'
+        //   + "54.145.46.146:8000"
+        //   + '/ws/chat/'
+        //   + String(username) + '_Room'
+        //   + '/'
+        // );
+        live_chat1=true
+      }
+      else if (is_world == true) {
+        product = "Hello".concat(" ", input)
+        await wait(1000);
+        botChat(input, 'Hello ' + input + ', Connected To World Chat')
+        await wait(1000)
+        // save_room(String(username) + '_Room')
+        // const chatSocket = new WebSocket(
+        //   'ws://'
+        //   + "54.145.46.146:8000"
+        //   + '/ws/chat/'
+        //   + String(username) + '_Room'
+        //   + '/'
+        // );
         live_chat1=true
       }
       break;
@@ -145,7 +162,7 @@ async function output(input) {
       addChat(input, input)
       r = (Math.random() + 1).toString(36).substring(7);
       chatSocket.send(JSON.stringify({
-        'message': input + '--' + String(username) + String(r)
+        'message': input + '--' + String(username) + '##' + String(r)
       }));
     default:
       break;
@@ -346,7 +363,7 @@ chatSocket.onmessage = function (e) {
   // then examine and act upon its contents.
   var repl = ''
   const data = JSON.parse(e.data);
-  re_txt = '--' + String(username) + String(r)
+  re_txt = '--' + String(username) + '##' + String(r)
   if (live_chat1 == true) {
     if (data.message.includes(re_txt)) {
       ;
@@ -355,15 +372,16 @@ chatSocket.onmessage = function (e) {
       // console.log(data.message,data.message.replace(re_txt,''))
       repl = data.message.split("--")
       console.log(re_txt, repl[0])
-      botChat(input, repl[0])
+      botChat(input, repl[0]+' <-'+repl[1].split("##")[0])
     }
   }
 }
 async function live_chat(html_input) {
   live_chat1 = true
   botChat_object(input, html_input)
-  await wait(4000)
+  await wait(5000)
   document.getElementById("messages").innerHTML = ""
+  await wait(2000)
   // while(server_check==true){
   //   chatSocket.onmessage = function(e) {
   //     // JSON.parse() converts the JSON object back into the original object,
@@ -433,4 +451,20 @@ async function d1_click(){
   await wait(4000)
   botChat(input,"Connected to Doctor "+avail_doctor[1].split('_')[0]+"")
 
+}
+
+async function world_server(){
+  if(server_check==true){
+    is_world = true
+    allow_input == true 
+    live_chat("<h5>Connecting To World chat......</h5>")
+    live_chat1 = false
+    document.getElementById("bt2").innerHTML = "Connected To World Chat"
+  }
+  setInterval(async function () {
+    await(2000)
+  if(server_check!=true){
+    document.getElementById("bt2").innerHTML = "World Chat"
+  }
+}, 1 * 5000); // 60 * 1000 milsec
 }
