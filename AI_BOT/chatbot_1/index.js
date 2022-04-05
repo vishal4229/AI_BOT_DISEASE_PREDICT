@@ -14,7 +14,7 @@ let avail_doctor=[]
 let is_world = false
 const chatSocket = new WebSocket(
   'ws://'
-  + "0.0.0.0:8000"
+  + "54.145.46.146:8000"
   + '/ws/chat/'
   + 'room_Room'
   + '/'
@@ -24,7 +24,7 @@ function get_available_doctor() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://0.0.0.0:8000/app/available_doctor',
+    url: 'http://54.145.46.146:8000/app/available_doctor',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -254,7 +254,7 @@ async function server() {
       $.ajax({
         type: "GET",
         contentType: "application/json;charset=utf-8",
-        url: 'http://0.0.0.0:8000/app/disease_predict',
+        url: 'http://54.145.46.146:8000/app/disease_predict',
         traditional: "true",
         // data: email1,
         success: function (result) {
@@ -324,7 +324,7 @@ function get_question() {
   $.ajax({
     type: "GET",
     contentType: "application/json;charset=utf-8",
-    url: 'http://0.0.0.0:8000/app/predict_questions',
+    url: 'http://54.145.46.146:8000/app/predict_questions',
     traditional: "true",
     // data: email1,
     success: function (result) {
@@ -345,7 +345,7 @@ function predict_result(result1) {
       type: "POST",
       contentType: "application/json;charset=utf-8",
       dataType: "json",
-      url: 'http://0.0.0.0:8000/app/disease_predict',
+      url: 'http://54.145.46.146:8000/app/disease_predict',
       traditional: "true",
       data: JSON.stringify(data_dict),
       success: function (result) {
@@ -409,7 +409,7 @@ function save_room(room1) {
     type: "POST",
     contentType: "application/json;charset=utf-8",
     dataType: "json",
-    url: 'http://0.0.0.0:8000/app/available_doctor',
+    url: 'http://54.145.46.146:8000/app/available_doctor',
     traditional: "true",
     data: JSON.stringify(data_dict),
     success: function (result) {
